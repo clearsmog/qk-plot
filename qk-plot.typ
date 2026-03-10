@@ -1,4 +1,4 @@
-// qk-plot — Palette constants for cetz-plot charts (v2.2.0)
+// qk-plot — Palette constants for cetz-plot charts (v2.3.0)
 // Mirrors the 8-color Tailwind 600-series cycle from qk_style.py
 // Usage: #import "qk-plot.typ": *
 
@@ -19,3 +19,15 @@
 
 // 8-color cycle for series assignment: cycle.at(i)
 #let qk-cycle = (qk-accent, qk-danger, qk-success, qk-warning, qk-purple, qk-teal, qk-orange, qk-rose)
+
+// Okabe-Ito colorblind-safe 8-color cycle (mirrors CYCLE_CB from qk_style.py)
+#let qk-cycle-cb = (
+  rgb("#0072B2"),  // blue
+  rgb("#D55E00"),  // vermillion
+  rgb("#009E73"),  // bluish green
+  rgb("#F0E442"),  // yellow
+  rgb("#CC79A7"),  // reddish purple
+  rgb("#56B4E9"),  // sky blue
+  rgb("#E69F00"),  // orange
+  rgb("#000000"),  // black
+)
