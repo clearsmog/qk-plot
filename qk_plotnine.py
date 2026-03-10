@@ -1,4 +1,4 @@
-"""qk_plotnine — plotnine (ggplot2) theme for the qk palette (v2.2.0).
+"""qk_plotnine — plotnine (ggplot2) theme for the qk palette (v2.3.0).
 
 Usage:
     from qk_plotnine import theme_qk, scale_color_qk, scale_fill_qk
@@ -20,7 +20,7 @@ from plotnine import (
     theme_bw,
 )
 
-# Mirror QK_COLORS from qk_style.py
+# Mirror palettes from qk_style.py
 CYCLE = [
     "#2563eb",  # accent (blue)
     "#dc2626",  # danger (red)
@@ -30,6 +30,18 @@ CYCLE = [
     "#0d9488",  # teal
     "#ea580c",  # orange
     "#e11d48",  # rose
+]
+
+# Okabe-Ito colorblind-safe palette
+CYCLE_CB = [
+    "#0072B2",  # blue
+    "#D55E00",  # vermillion
+    "#009E73",  # bluish green
+    "#F0E442",  # yellow
+    "#CC79A7",  # reddish purple
+    "#56B4E9",  # sky blue
+    "#E69F00",  # orange
+    "#000000",  # black
 ]
 
 
@@ -59,11 +71,13 @@ class theme_qk(theme_bw):
         matplotlib.rcParams["svg.fonttype"] = "path"
 
 
-def scale_color_qk():
-    """Return a discrete color scale using the qk cycle."""
-    return scale_color_manual(values=CYCLE)
+def scale_color_qk(*, colorblind: bool = False):
+    """Discrete color scale. Use colorblind=True for Okabe-Ito palette."""
+    colors = CYCLE_CB if colorblind else CYCLE
+    return scale_color_manual(values=colors)
 
 
-def scale_fill_qk():
-    """Return a discrete fill scale using the qk cycle."""
-    return scale_fill_manual(values=CYCLE)
+def scale_fill_qk(*, colorblind: bool = False):
+    """Discrete fill scale. Use colorblind=True for Okabe-Ito palette."""
+    colors = CYCLE_CB if colorblind else CYCLE
+    return scale_fill_manual(values=colors)
