@@ -1,0 +1,71 @@
+# qk — Matplotlib style harmonized with the qk Typst library (v2.2.0)
+# Palette: Tailwind CSS 600-series; typography matches Inter headings
+# Install globally: cp qk.mplstyle ~/.matplotlib/stylelib/
+
+# ── Color cycle (Tailwind 600-series, ordered for visual distinction) ──
+axes.prop_cycle: cycler('color', ['2563eb', 'dc2626', '059669', 'd97706', '7c3aed', '0d9488', 'ea580c', 'e11d48'])
+
+# ── Typography ──
+font.family: sans-serif
+font.sans-serif: Inter, Helvetica Neue, Helvetica, Arial, DejaVu Sans
+font.size: 10.5
+font.weight: 400
+
+axes.titlesize: 14
+axes.titleweight: bold
+axes.titlecolor: 1e3a8a
+axes.titlepad: 10
+axes.labelsize: 11
+axes.labelweight: 500
+axes.labelcolor: 0f172a
+
+xtick.labelsize: 10
+ytick.labelsize: 10
+xtick.color: 64748b
+ytick.color: 64748b
+xtick.labelcolor: 0f172a
+ytick.labelcolor: 0f172a
+
+legend.fontsize: 9
+
+figure.titlesize: 18
+figure.titleweight: bold
+
+# ── Axes & spines ──
+axes.facecolor: white
+axes.edgecolor: e2e8f0
+axes.linewidth: 0.8
+axes.spines.top: False
+axes.spines.right: False
+
+# ── Grid (y-axis only, subtle) ──
+axes.grid: True
+axes.grid.axis: y
+grid.color: e2e8f0
+grid.alpha: 0.5
+grid.linewidth: 0.6
+grid.linestyle: -
+
+# ── Lines & markers ──
+lines.linewidth: 2.0
+lines.markersize: 6
+lines.markeredgewidth: 1.0
+
+# ── Figure ──
+figure.figsize: 8, 5
+figure.dpi: 150
+figure.facecolor: white
+figure.constrained_layout.use: True
+figure.constrained_layout.h_pad: 0.05
+figure.constrained_layout.hspace: 0.04
+
+# ── Legend ──
+legend.frameon: False
+legend.framealpha: 0.9
+
+# ── Savefig (print-quality for Typst PDFs) ──
+savefig.dpi: 300
+savefig.facecolor: white
+savefig.bbox: tight
+savefig.format: svg
+svg.fonttype: path

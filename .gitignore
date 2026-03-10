@@ -1,0 +1,6 @@
+__pycache__/
+*.png
+*.svg
+*.pdf
+.venv/
+session_logs/
