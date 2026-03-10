@@ -1,10 +1,13 @@
-"""qk_style — Apply the qk Matplotlib/Seaborn theme (v2.2.0).
+"""qk_style — Apply the qk Matplotlib/Seaborn theme (v2.3.0).
 
 Usage:
     from qk_style import use
     use()              # paper context (default)
     use("talk")        # larger fonts/lines for slides
     use("poster")      # even larger for A0/A1 posters
+
+Composable overlays (after importing this module):
+    plt.style.use(["qk", "qk-talk"])
 """
 
 from __future__ import annotations
@@ -39,6 +42,18 @@ CYCLE = [
     QK_COLORS["teal"],
     QK_COLORS["orange"],
     QK_COLORS["rose"],
+]
+
+# Okabe-Ito colorblind-safe palette
+CYCLE_CB = [
+    "#0072B2",  # blue
+    "#D55E00",  # vermillion
+    "#009E73",  # bluish green
+    "#F0E442",  # yellow
+    "#CC79A7",  # reddish purple
+    "#56B4E9",  # sky blue
+    "#E69F00",  # orange
+    "#000000",  # black
 ]
 
 _STYLE_FILE = Path(__file__).with_name("qk.mplstyle")
@@ -87,43 +102,169 @@ def _context_overrides(name: str) -> dict:
     }
 
 
-def use(context: str = "paper") -> None:
+# ── Auto font registration ──
+
+
+def _ensure_inter() -> None:
+    """Register Inter font files if not already available to matplotlib."""
+    from matplotlib import font_manager as fm
+
+    # Check if Inter is already available
+    available = {f.name.lower() for f in fm.fontManager.ttflist}
+    if "inter" in available:
+        return
+
+    search_dirs = [
+        Path.home() / "Library" / "Fonts",
+        Path("/System/Library/Fonts"),
+        Path("/System/Library/Fonts/Supplemental"),
+        Path("/usr/share/fonts"),
+        Path.home() / ".local" / "share" / "fonts",
+    ]
+
+    registered = False
+    for d in search_dirs:
+        if not d.is_dir():
+            continue
+        for pattern in ("Inter*.ttf", "Inter*.otf"):
+            for font_path in d.glob(pattern):
+                fm.fontManager.addfont(str(font_path))
+                registered = True
+
+    if registered:
+        fm._load_fontmanager(try_read_cache=False)
+
+
+# ── Composable context overlays ──
+
+
+def _register_context_styles() -> None:
+    """Register qk-talk and qk-poster as composable style overlays.
+
+    After this, ``plt.style.use(["qk", "qk-talk"])`` works without
+    separate .mplstyle files on disk.
+    """
+    import matplotlib.style as mstyle
+
+    for name in ("talk", "poster"):
+        style_name = f"qk-{name}"
+        if style_name not in mstyle.library:
+            mstyle.library[style_name] = _context_overrides(name)
+            mstyle.available.append(style_name)
+
+
+try:
+    _register_context_styles()
+except Exception:
+    pass
+
+
+# ── Public API ──
+
+
+def use(context: str = "paper", *, colorblind: bool = False) -> None:
     """Apply the qk style globally (Matplotlib + Seaborn if available).
 
     Parameters
     ----------
     context : str
         Scaling preset — ``"paper"`` (default), ``"talk"``, or ``"poster"``.
+    colorblind : bool
+        If True, swap the color cycle to the Okabe-Ito colorblind-safe palette.
     """
     if context not in _CONTEXTS:
         raise ValueError(
             f"Unknown context {context!r}. Choose from: {', '.join(_CONTEXTS)}"
         )
 
+    _ensure_inter()
     plt.style.use(str(_STYLE_FILE))
     plt.rcParams.update(_context_overrides(context))
 
-    # Register the qk diverging colormap
+    if colorblind:
+        from cycler import cycler
+
+        plt.rcParams["axes.prop_cycle"] = cycler(color=CYCLE_CB)
+
+    # Register all colormaps
     qk_cmap()
+    qk_cmap("qk_sequential")
+    qk_cmap("qk_qualitative")
 
     try:
-        set_seaborn_theme()
+        set_seaborn_theme(colorblind=colorblind)
     except ImportError:
         pass
 
 
-def qk_cmap():
-    """Register and return a blue-white-red diverging colormap."""
-    from matplotlib.colors import LinearSegmentedColormap
+def qk_cmap(name: str = "qk_diverging"):
+    """Register and return a qk colormap.
 
+    Parameters
+    ----------
+    name : str
+        ``"qk_diverging"`` (default) — blue-white-red
+        ``"qk_sequential"`` — white to dark blue
+        ``"qk_qualitative"`` — 8-color categorical
+    """
     import matplotlib as mpl
+    from matplotlib.colors import LinearSegmentedColormap, ListedColormap
 
-    cmap = LinearSegmentedColormap.from_list(
-        "qk_diverging",
-        [QK_COLORS["accent"], "#ffffff", QK_COLORS["danger"]],
-    )
+    if name == "qk_diverging":
+        cmap = LinearSegmentedColormap.from_list(
+            "qk_diverging",
+            [QK_COLORS["accent"], "#ffffff", QK_COLORS["danger"]],
+        )
+    elif name == "qk_sequential":
+        cmap = LinearSegmentedColormap.from_list(
+            "qk_sequential",
+            ["#ffffff", "#93c5fd", QK_COLORS["accent"], "#1e3a8a"],
+        )
+    elif name == "qk_qualitative":
+        cmap = ListedColormap(CYCLE, name="qk_qualitative")
+    else:
+        raise ValueError(
+            f"Unknown colormap {name!r}. "
+            "Choose from: qk_diverging, qk_sequential, qk_qualitative"
+        )
+
     mpl.colormaps.register(cmap, force=True)
     return cmap
+
+
+def line_labels(ax=None, **text_kwargs) -> None:
+    """Place labels at the end of each line, replacing the legend.
+
+    Reads label and color from each Line2D on the axes, places an
+    annotation at the last data point, and removes the legend.
+    """
+    from matplotlib.lines import Line2D
+
+    if ax is None:
+        ax = plt.gca()
+
+    defaults = {"fontsize": 9, "fontweight": 500, "va": "center"}
+    defaults.update(text_kwargs)
+
+    for line in ax.get_lines():
+        if not isinstance(line, Line2D):
+            continue
+        label = line.get_label()
+        if label.startswith("_"):
+            continue
+        xdata, ydata = line.get_xdata(), line.get_ydata()
+        if len(xdata) == 0:
+            continue
+        ax.annotate(
+            f"  {label}",
+            xy=(xdata[-1], ydata[-1]),
+            color=line.get_color(),
+            **defaults,
+        )
+
+    legend = ax.get_legend()
+    if legend is not None:
+        legend.remove()
 
 
 def heatmap_kws(**overrides) -> dict:
@@ -152,25 +293,29 @@ def strip_kws(**overrides) -> dict:
     return defaults
 
 
-def qk_palette(n: int | None = None):
+def qk_palette(n: int | None = None, *, colorblind: bool = False):
     """Return the qk color cycle as a Seaborn palette.
 
     Parameters
     ----------
     n : int, optional
         Number of colors. Defaults to the full 8-color cycle.
+    colorblind : bool
+        If True, return the Okabe-Ito palette instead.
     """
     import seaborn as sns
 
-    colors = CYCLE[:n] if n else CYCLE
+    base = CYCLE_CB if colorblind else CYCLE
+    colors = base[:n] if n else base
     return sns.color_palette(colors)
 
 
-def set_seaborn_theme() -> None:
+def set_seaborn_theme(*, colorblind: bool = False) -> None:
     """Configure Seaborn to use qk aesthetics."""
     import seaborn as sns
 
-    sns.set_palette(qk_palette())
+    palette = qk_palette(colorblind=colorblind)
+    sns.set_palette(palette)
     sns.set_style(
         "white",
         {

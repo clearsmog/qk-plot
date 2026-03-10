@@ -1,4 +1,4 @@
-# qk — Matplotlib style harmonized with the qk Typst library (v2.2.0)
+# qk — Matplotlib style harmonized with the qk Typst library (v2.3.0)
 # Palette: Tailwind CSS 600-series; typography matches Inter headings
 # Install globally: cp qk.mplstyle ~/.matplotlib/stylelib/
 
@@ -11,6 +11,13 @@ font.sans-serif: Inter, Helvetica Neue, Helvetica, Arial, DejaVu Sans
 font.size: 10.5
 font.weight: 400
 
+# ── Math text (render formulas in Inter, not Computer Modern) ──
+mathtext.fontset: custom
+mathtext.rm: Inter
+mathtext.sf: Inter
+mathtext.it: Inter:italic
+mathtext.bf: Inter:bold
+
 axes.titlesize: 14
 axes.titleweight: bold
 axes.titlecolor: 1e3a8a
@@ -18,6 +25,7 @@ axes.titlepad: 10
 axes.labelsize: 11
 axes.labelweight: 500
 axes.labelcolor: 0f172a
+axes.labelpad: 8
 
 xtick.labelsize: 10
 ytick.labelsize: 10
@@ -49,7 +57,9 @@ grid.linestyle: -
 # ── Lines & markers ──
 lines.linewidth: 2.0
 lines.markersize: 6
-lines.markeredgewidth: 1.0
+lines.markeredgewidth: 0.5
+
+scatter.edgecolors: white
 
 # ── Figure ──
 figure.figsize: 8, 5
@@ -67,5 +77,6 @@ legend.framealpha: 0.9
 savefig.dpi: 300
 savefig.facecolor: white
 savefig.bbox: tight
+savefig.pad_inches: 0.1
 savefig.format: svg
 svg.fonttype: path
