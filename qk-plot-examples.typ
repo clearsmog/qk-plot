@@ -1,27 +1,16 @@
-// qk-plot-examples — Three cetz-plot charts using the qk palette
+// qk-plot-examples — cetz-plot and Lilaq charts using the qk style (v3.0.0)
 #import "@preview/cetz:0.4.2"
 #import "@preview/cetz-plot:0.1.3": plot, chart
+#import "@preview/lilaq:0.6.0" as lq
 
 #import "qk-plot.typ": *
 
-#set text(font: "Inter", size: 10.5pt)
+#set text(font: qk-font-family, size: qk-font-sizes.base)
 #set page(margin: 2cm)
-
-// Palette function for plot-style: returns stroke + fill per series index
-#let qk-plot-style(i) = {
-  let c = qk-cycle.at(calc.rem(i, qk-cycle.len()))
-  (stroke: c + 2pt, fill: c.lighten(75%))
-}
-
-// Palette function for bar-style: returns stroke + fill per bar index
-#let qk-bar-style(i) = {
-  let c = qk-cycle.at(calc.rem(i, qk-cycle.len()))
-  (stroke: c + 0.75pt, fill: c.lighten(30%))
-}
 
 = qk-plot Examples
 
-== Line Chart
+== cetz-plot: Line Chart
 
 #figure(
   cetz.canvas({
@@ -35,7 +24,7 @@
       y-tick-step: 10,
       y-min: 0,
       y-grid: true,
-      legend: auto,
+      legend: "inner-north-east",
       plot-style: qk-plot-style,
       {
         plot.add(
@@ -53,12 +42,12 @@
       },
     )
   }),
-  caption: [Monthly revenue by product line],
+  caption: [Monthly revenue by product line (cetz-plot)],
 )
 
 #pagebreak()
 
-== Column Chart
+== cetz-plot: Column Chart
 
 #figure(
   cetz.canvas({
@@ -77,12 +66,12 @@
       ),
     )
   }),
-  caption: [Quarterly active users],
+  caption: [Quarterly active users (cetz-plot)],
 )
 
 #pagebreak()
 
-== Area Chart (fill-between)
+== cetz-plot: Area Chart
 
 #figure(
   cetz.canvas({
@@ -96,16 +85,14 @@
       y-tick-step: 5,
       y-min: 0,
       y-grid: true,
-      legend: auto,
+      legend: "inner-north-east",
       plot-style: qk-plot-style,
       {
-        // Area series 1: filled line
         plot.add(
           ((1, 12), (2, 18), (3, 15), (4, 22), (5, 19), (6, 25), (7, 28)),
           fill: true,
           label: [API v2],
         )
-        // Area series 2: filled line
         plot.add(
           ((1, 5), (2, 8), (3, 10), (4, 7), (5, 12), (6, 14), (7, 11)),
           fill: true,
@@ -114,5 +101,76 @@
       },
     )
   }),
-  caption: [Daily API request volume by version],
+  caption: [Daily API request volume by version (cetz-plot)],
 )
+
+#pagebreak()
+
+== Lilaq: Line Chart
+
+#show: qk-lilaq-theme()
+
+#figure(
+  lq.diagram(
+    width: 10cm,
+    height: 6cm,
+    title: [Monthly Revenue],
+    xlabel: [Month],
+    ylabel: [Revenue (\$M)],
+    ylim: (0, auto),
+    lq.plot((1, 2, 3, 4, 5, 6), (45, 52, 48, 61, 58, 72), label: [Product A]),
+    lq.plot((1, 2, 3, 4, 5, 6), (30, 35, 42, 38, 45, 51), label: [Product B]),
+    lq.plot((1, 2, 3, 4, 5, 6), (22, 28, 31, 35, 40, 47), label: [Product C]),
+  ),
+  caption: [Monthly revenue by product line (Lilaq)],
+)
+
+#pagebreak()
+
+== Lilaq: Bar Chart
+
+#figure(
+  lq.diagram(
+    width: 10cm,
+    height: 6cm,
+    title: [Quarterly Users],
+    xlabel: [Quarter],
+    ylabel: [Users (thousands)],
+    ylim: (0, auto),
+    lq.bar(
+      (0, 1, 2, 3),
+      (84, 112, 97, 135),
+      label: [Active users],
+    ),
+  ),
+  caption: [Quarterly active users (Lilaq)],
+)
+
+#pagebreak()
+
+== Lilaq: Scatter (Colorblind-Safe)
+
+#{
+  show: qk-lilaq-theme(colorblind: true)
+
+  import calc: cos, sin
+
+  let n = 40
+  let x1 = range(n).map(i => calc.cos(i * 0.3) * 2 + 3)
+  let y1 = range(n).map(i => calc.sin(i * 0.3) * 2 + 4)
+  let x2 = range(n).map(i => calc.cos(i * 0.3 + 1) * 1.5 + 6)
+  let y2 = range(n).map(i => calc.sin(i * 0.3 + 1) * 1.5 + 3)
+
+  figure(
+    lq.diagram(
+      width: 10cm,
+      height: 6cm,
+      title: [Feature Space (Okabe-Ito)],
+      xlabel: [Feature 1],
+      ylabel: [Feature 2],
+      lq.scatter(x1, y1, label: [Cluster A]),
+      lq.scatter(x2, y2, label: [Cluster B]),
+    ),
+    caption: [Scatter plot with colorblind-safe palette (Lilaq)],
+  )
+}

@@ -1,4 +1,4 @@
-"""qk_style — Apply the qk Matplotlib/Seaborn theme (v2.3.0).
+"""qk_style — Apply the qk Matplotlib/Seaborn theme (v3.0.0).
 
 Usage:
     from qk_style import use
@@ -56,14 +56,36 @@ CYCLE_CB = [
     "#000000",  # black
 ]
 
+
+def lighten(hex_color: str, amount: float = 0.75) -> str:
+    """Lighten a hex color by mixing with white.
+
+    Parameters
+    ----------
+    hex_color : str
+        Hex color string (with or without '#' prefix).
+    amount : float
+        0.0 = unchanged, 1.0 = white.
+    """
+    h = hex_color.lstrip("#")
+    r, g, b = int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16)
+    r = round(r + (255 - r) * amount)
+    g = round(g + (255 - g) * amount)
+    b = round(b + (255 - b) * amount)
+    return f"#{r:02x}{g:02x}{b:02x}"
+
+
+CYCLE_LIGHT = [lighten(c, 0.75) for c in CYCLE]  # area/fill backgrounds
+CYCLE_BAR = [lighten(c, 0.30) for c in CYCLE]  # bar fill colors
+
 _STYLE_FILE = Path(__file__).with_name("qk.mplstyle")
 
 # ── Context presets (scaling overrides) ──
-_PAPER_BASE = 10.5
+_PAPER_BASE = 11
 
 _CONTEXTS: dict[str, dict] = {
     "paper": {
-        "font.size": 10.5,
+        "font.size": 11,
         "figure.figsize": (8, 5),
         "lines.linewidth": 2.0,
     },
@@ -81,9 +103,9 @@ _CONTEXTS: dict[str, dict] = {
 
 # Paper-baseline sizes (must match qk.mplstyle)
 _PAPER_TITLE = 14
-_PAPER_LABEL = 11
-_PAPER_TICK = 10
-_PAPER_LEGEND = 9
+_PAPER_LABEL = 11.5
+_PAPER_TICK = 10.5
+_PAPER_LEGEND = 9.5
 
 
 def _context_overrides(name: str) -> dict:
@@ -243,7 +265,7 @@ def line_labels(ax=None, **text_kwargs) -> None:
     if ax is None:
         ax = plt.gca()
 
-    defaults = {"fontsize": 9, "fontweight": 500, "va": "center"}
+    defaults = {"fontsize": 9.5, "fontweight": 500, "va": "center"}
     defaults.update(text_kwargs)
 
     for line in ax.get_lines():
@@ -273,7 +295,7 @@ def heatmap_kws(**overrides) -> dict:
         "cmap": "qk_diverging",
         "linewidths": 0.5,
         "linecolor": "white",
-        "annot_kws": {"size": 9},
+        "annot_kws": {"size": 9.5},
     }
     defaults.update(overrides)
     return defaults
@@ -289,6 +311,67 @@ def violin_kws(**overrides) -> dict:
 def strip_kws(**overrides) -> dict:
     """Return default seaborn strip plot kwargs with qk styling."""
     defaults = {"jitter": 0.3, "edgecolor": "white", "linewidth": 0.5}
+    defaults.update(overrides)
+    return defaults
+
+
+def boxplot_kws(**overrides) -> dict:
+    """Return default seaborn boxplot kwargs with qk styling."""
+    defaults = {
+        "saturation": 0.85,
+        "linewidth": 0.8,
+        "linecolor": QK_COLORS["text"],
+        "fliersize": 4,
+    }
+    defaults.update(overrides)
+    return defaults
+
+
+def barplot_kws(**overrides) -> dict:
+    """Return default seaborn barplot kwargs with qk styling.
+
+    For per-bar colors, pass hue=x_col and palette=CYCLE_BAR:
+        sns.barplot(df, x="cat", y="val", hue="cat", legend=False,
+                    **barplot_kws(palette=CYCLE_BAR))
+    """
+    defaults = {
+        "saturation": 0.85,
+        "edgecolor": QK_COLORS["text"],
+        "linewidth": 0.8,
+        "capsize": 0.1,
+        "err_kws": {"linewidth": 1.2},
+    }
+    defaults.update(overrides)
+    return defaults
+
+
+def catplot_kws(**overrides) -> dict:
+    """Return default seaborn catplot kwargs with qk styling."""
+    defaults = {"height": 5, "aspect": 1.6, "margin_titles": True}
+    defaults.update(overrides)
+    return defaults
+
+
+def pairplot_kws(**overrides) -> dict:
+    """Return default seaborn pairplot kwargs with qk styling."""
+    defaults = {
+        "corner": True,
+        "diag_kind": "kde",
+        "height": 2.5,
+        "plot_kws": {"alpha": 0.6, "edgecolor": "white", "linewidth": 0.5},
+        "diag_kws": {"linewidth": 1.5},
+    }
+    defaults.update(overrides)
+    return defaults
+
+
+def jointplot_kws(**overrides) -> dict:
+    """Return default seaborn jointplot kwargs with qk styling."""
+    defaults = {
+        "height": 6,
+        "marginal_kws": {"linewidth": 1.2},
+        "joint_kws": {"alpha": 0.6, "edgecolor": "white", "linewidth": 0.5},
+    }
     defaults.update(overrides)
     return defaults
 

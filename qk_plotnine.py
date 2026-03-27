@@ -1,4 +1,4 @@
-"""qk_plotnine — plotnine (ggplot2) theme for the qk palette (v2.3.0).
+"""qk_plotnine — plotnine (ggplot2) theme for the qk palette (v3.0.0).
 
 Usage:
     from qk_plotnine import theme_qk, scale_color_qk, scale_fill_qk
@@ -48,7 +48,7 @@ CYCLE_CB = [
 class theme_qk(theme_bw):
     """qk theme for plotnine — matches the matplotlib qk style."""
 
-    def __init__(self, base_size: float = 10.5, base_family: str = "Inter"):
+    def __init__(self, base_size: float = 11, base_family: str = "Inter"):
         super().__init__(base_size=base_size, base_family=base_family)
         self += theme(
             plot_title=element_text(
