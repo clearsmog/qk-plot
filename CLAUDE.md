@@ -1,26 +1,28 @@
-# qk-plot (v3.0.0)
+# qk-plot (v3.1.0)
 
 Unified plotting theme: matplotlib, seaborn, plotnine, cetz-plot, Lilaq.
 
 ## File Relationships
 
 ```
-qk.mplstyle          <-- source of truth for rcParams
+qk_colors.py         <-- single source of truth for Python palettes
     |
-qk_style.py          <-- Python API wrapping mplstyle + seaborn + colormaps
+    +--> qk_style.py          <-- matplotlib + seaborn API, colormaps, helpers
+    |       ^
+    |       └── qk.mplstyle    <-- rcParams (cycle hex codes mirrored)
     |
-qk_plotnine.py       <-- plotnine theme mirroring qk_style
-    |
-qk-plot.typ          <-- Typst colors + cetz-plot helpers + Lilaq theme
+    +--> qk_plotnine.py        <-- plotnine theme + scales
+
+qk-plot.typ          <-- Typst companion (mirrors palette manually)
 ```
 
 ## Color Sync Protocol
 
-Changes to colors MUST propagate to ALL 4 files:
-1. `qk.mplstyle` — `axes.prop_cycle`
-2. `qk_style.py` — `QK_COLORS`, `CYCLE`, `CYCLE_LIGHT`, `CYCLE_BAR`
-3. `qk_plotnine.py` — `CYCLE`
-4. `qk-plot.typ` — `qk-cycle`, individual `qk-*` color lets, `qk-cycle-light`, `qk-cycle-bar`
+One Python site, two mirrored sites. Edits to `qk_colors.py` flow to `qk_style.py` and `qk_plotnine.py` via import. The mplstyle and Typst files duplicate the hex codes and must be updated manually:
+
+1. `qk_colors.py` — `QK_COLORS`, `CYCLE`, `CYCLE_CB`, `CYCLE_LIGHT`, `CYCLE_BAR`, `lighten` (authoritative)
+2. `qk.mplstyle` — `axes.prop_cycle` (manual mirror)
+3. `qk-plot.typ` — `qk-cycle`, individual `qk-*` color lets, `qk-cycle-light`, `qk-cycle-bar` (manual mirror)
 
 ## Version Management
 

@@ -6,7 +6,7 @@
   <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
    <cc:Work>
     <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
-    <dc:date>2026-03-27T10:35:12.137020</dc:date>
+    <dc:date>2026-04-17T21:25:35.831527</dc:date>
     <dc:format>image/svg+xml</dc:format>
     <dc:creator>
      <cc:Agent>
@@ -613,7 +613,7 @@ L 183.893402 357.797422
 L 183.893402 170.53469 
 L 78.67892 170.53469 
 z
-" clip-path="url(#p3e48ba28ef)" style="fill: #7096e7; stroke: #0f172a; stroke-width: 0.8; stroke-linejoin: miter"/>
+" clip-path="url(#pdf9a81eb5c)" style="fill: #7096e7; stroke: #0f172a; stroke-width: 0.8; stroke-linejoin: miter"/>
    </g>
    <g id="patch_4">
     <path d="M 210.197022 357.797422 
@@ -621,7 +621,7 @@ L 315.411504 357.797422
 L 315.411504 108.11378 
 L 210.197022 108.11378 
 z
-" clip-path="url(#p3e48ba28ef)" style="fill: #dc7171; stroke: #0f172a; stroke-width: 0.8; stroke-linejoin: miter"/>
+" clip-path="url(#pdf9a81eb5c)" style="fill: #dc7171; stroke: #0f172a; stroke-width: 0.8; stroke-linejoin: miter"/>
    </g>
    <g id="patch_5">
     <path d="M 341.715125 357.797422 
@@ -629,7 +629,7 @@ L 446.929607 357.797422
 L 446.929607 141.553553 
 L 341.715125 141.553553 
 z
-" clip-path="url(#p3e48ba28ef)" style="fill: #58ae93; stroke: #0f172a; stroke-width: 0.8; stroke-linejoin: miter"/>
+" clip-path="url(#pdf9a81eb5c)" style="fill: #58ae93; stroke: #0f172a; stroke-width: 0.8; stroke-linejoin: miter"/>
    </g>
    <g id="patch_6">
     <path d="M 473.233228 357.797422 
@@ -637,7 +637,7 @@ L 578.44771 357.797422
 L 578.44771 56.839461 
 L 473.233228 56.839461 
 z
-" clip-path="url(#p3e48ba28ef)" style="fill: #d99f5c; stroke: #0f172a; stroke-width: 0.8; stroke-linejoin: miter"/>
+" clip-path="url(#pdf9a81eb5c)" style="fill: #d99f5c; stroke: #0f172a; stroke-width: 0.8; stroke-linejoin: miter"/>
    </g>
    <g id="patch_7">
     <path d="M 65.527109 357.797422 
@@ -925,7 +925,7 @@ z
   </g>
  </g>
  <defs>
-  <clipPath id="p3e48ba28ef">
+  <clipPath id="pdf9a81eb5c">
    <rect x="65.527109" y="41.791562" width="526.072411" height="316.005859"/>
   </clipPath>
  </defs>

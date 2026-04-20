@@ -1,4 +1,4 @@
-"""qk_plotnine — plotnine (ggplot2) theme for the qk palette (v3.0.0).
+"""qk_plotnine — plotnine (ggplot2) theme for the qk palette (v3.1.0).
 
 Usage:
     from qk_plotnine import theme_qk, scale_color_qk, scale_fill_qk
@@ -20,29 +20,7 @@ from plotnine import (
     theme_bw,
 )
 
-# Mirror palettes from qk_style.py
-CYCLE = [
-    "#2563eb",  # accent (blue)
-    "#dc2626",  # danger (red)
-    "#059669",  # success (green)
-    "#d97706",  # warning (amber)
-    "#7c3aed",  # purple
-    "#0d9488",  # teal
-    "#ea580c",  # orange
-    "#e11d48",  # rose
-]
-
-# Okabe-Ito colorblind-safe palette
-CYCLE_CB = [
-    "#0072B2",  # blue
-    "#D55E00",  # vermillion
-    "#009E73",  # bluish green
-    "#F0E442",  # yellow
-    "#CC79A7",  # reddish purple
-    "#56B4E9",  # sky blue
-    "#E69F00",  # orange
-    "#000000",  # black
-]
+from qk_colors import CYCLE, CYCLE_BAR, CYCLE_CB
 
 
 class theme_qk(theme_bw):
@@ -60,7 +38,7 @@ class theme_qk(theme_bw):
             axis_text=element_text(color="#0f172a", size=base_size * 0.95),
             axis_ticks=element_line(color="#64748b"),
             panel_background=element_rect(fill="white"),
-            panel_grid_major_y=element_line(color="#e2e8f0", alpha=0.5, size=0.6),
+            panel_grid_major_y=element_line(color="#e2e8f0", alpha=0.5, linewidth=0.6),
             panel_grid_major_x=element_blank(),
             panel_grid_minor=element_blank(),
             legend_background=element_rect(fill="white", color="none"),
@@ -81,3 +59,12 @@ def scale_fill_qk(*, colorblind: bool = False):
     """Discrete fill scale. Use colorblind=True for Okabe-Ito palette."""
     colors = CYCLE_CB if colorblind else CYCLE
     return scale_fill_manual(values=colors)
+
+
+def scale_fill_qk_bar():
+    """Discrete fill scale using the lightened bar palette (CYCLE_BAR).
+
+    Matches the ``CYCLE_BAR`` seaborn pattern — use for bar / column charts
+    where the full-saturation CYCLE would overwhelm categorical reading.
+    """
+    return scale_fill_manual(values=CYCLE_BAR)

@@ -1,4 +1,4 @@
-# qk Plotting Stack (v3.0.0)
+# qk Plotting Stack (v3.1.0)
 
 Unified plotting theme across matplotlib, seaborn, plotnine, cetz-plot, and Lilaq — all sharing the Tailwind CSS 600-series palette.
 

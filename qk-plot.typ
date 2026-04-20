@@ -1,5 +1,5 @@
-// qk-plot — Style library for cetz-plot and Lilaq charts (v3.0.0)
-// Mirrors the Tailwind CSS 600-series palette from qk_style.py
+// qk-plot — Style library for cetz-plot and Lilaq charts (v3.1.0)
+// Mirrors the Tailwind CSS 600-series palette from qk_colors.py
 // Usage: #import "qk-plot.typ": *
 
 // ── Color palette ──
@@ -27,7 +27,7 @@
 #let qk-cycle-light = qk-cycle.map(c => c.lighten(75%))  // area/fill backgrounds
 #let qk-cycle-bar = qk-cycle.map(c => c.lighten(30%))    // bar fills
 
-// Okabe-Ito colorblind-safe 8-color cycle (mirrors CYCLE_CB from qk_style.py)
+// Okabe-Ito colorblind-safe 8-color cycle (mirrors CYCLE_CB from qk_colors.py)
 #let qk-cycle-cb = (
   rgb("#0072B2"),  // blue
   rgb("#D55E00"),  // vermillion
@@ -51,6 +51,15 @@
   suptitle: 18pt,
 )
 
+// Weight tokens mirror mplstyle: axes.titleweight=bold, axes.labelweight=500
+#let qk-font-weights = (
+  base: 400,
+  title: "bold",
+  label: 500,
+  tick: 400,
+  legend: 400,
+)
+
 // ── Stroke constants (matching qk.mplstyle) ──
 
 #let qk-grid-stroke = 0.6pt + qk-border.transparentize(50%)
@@ -72,10 +81,13 @@
 // ── Lilaq theme ──
 // Usage: #show: qk-lilaq-theme()
 // Colorblind variant: #show: qk-lilaq-theme(colorblind: true)
+// Grid modes: "y" (default, 1-D series), "x", "both" (2-D scatter), "none"
 
-#let qk-lilaq-theme(colorblind: false) = {
+#let qk-lilaq-theme(colorblind: false, grid: "y") = {
   import "@preview/lilaq:0.6.0" as lq
   let colors = if colorblind { qk-cycle-cb } else { qk-cycle }
+  let x-stroke = if grid == "x" or grid == "both" { qk-grid-stroke } else { none }
+  let y-stroke = if grid == "y" or grid == "both" { qk-grid-stroke } else { none }
   it => {
     show: lq.set-diagram(
       cycle: colors,
@@ -83,13 +95,25 @@
       yaxis: (subticks: none, mirror: false),
     )
     show: lq.set-spine(stroke: qk-spine-stroke)
-    show: lq.set-grid(stroke: qk-grid-stroke)
-    show: lq.set-tick(stroke: 0.7pt, inset: 0pt, outset: 2.5pt)
-    show: lq.set-legend(pad: 0.4em, stroke: none, fill: white)
+    // Per-axis grid strokes (matplotlib mirrors: default "y" shows y-grid only)
+    show: lq.cond-set(lq.grid.with(kind: "x"), stroke: x-stroke)
+    show: lq.cond-set(lq.grid.with(kind: "y"), stroke: y-stroke)
+    show: lq.set-tick(stroke: 0.7pt, inset: 0pt, outset: 3pt)
+    show: lq.set-legend(pad: 0.4em, stroke: none, fill: qk-surface)
     // Typography via show rules on Lilaq element selectors
-    show lq.selector(lq.tick-label): set text(size: qk-font-sizes.tick)
-    show lq.selector(lq.label): set text(size: qk-font-sizes.label)
-    show lq.selector(lq.title): set text(size: qk-font-sizes.title, weight: "bold", fill: qk-heading)
+    show lq.selector(lq.tick-label): set text(
+      size: qk-font-sizes.tick,
+      weight: qk-font-weights.tick,
+    )
+    show lq.selector(lq.label): set text(
+      size: qk-font-sizes.label,
+      weight: qk-font-weights.label,
+    )
+    show lq.selector(lq.title): set text(
+      size: qk-font-sizes.title,
+      weight: qk-font-weights.title,
+      fill: qk-heading,
+    )
     it
   }
 }

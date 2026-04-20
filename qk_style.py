@@ -1,4 +1,4 @@
-"""qk_style — Apply the qk Matplotlib/Seaborn theme (v3.0.0).
+"""qk_style — Apply the qk Matplotlib/Seaborn theme (v3.1.0).
 
 Usage:
     from qk_style import use
@@ -16,69 +16,19 @@ from pathlib import Path
 
 import matplotlib.pyplot as plt
 
-# ── qk palette (Tailwind CSS 600-series) ──
-QK_COLORS = {
-    "accent": "#2563eb",
-    "danger": "#dc2626",
-    "success": "#059669",
-    "warning": "#d97706",
-    "purple": "#7c3aed",
-    "teal": "#0d9488",
-    "orange": "#ea580c",
-    "rose": "#e11d48",
-    "heading": "#1e3a8a",
-    "text": "#0f172a",
-    "muted": "#64748b",
-    "surface": "#f8fafc",
-    "border": "#e2e8f0",
-}
-
-CYCLE = [
-    QK_COLORS["accent"],
-    QK_COLORS["danger"],
-    QK_COLORS["success"],
-    QK_COLORS["warning"],
-    QK_COLORS["purple"],
-    QK_COLORS["teal"],
-    QK_COLORS["orange"],
-    QK_COLORS["rose"],
-]
-
-# Okabe-Ito colorblind-safe palette
-CYCLE_CB = [
-    "#0072B2",  # blue
-    "#D55E00",  # vermillion
-    "#009E73",  # bluish green
-    "#F0E442",  # yellow
-    "#CC79A7",  # reddish purple
-    "#56B4E9",  # sky blue
-    "#E69F00",  # orange
-    "#000000",  # black
-]
-
-
-def lighten(hex_color: str, amount: float = 0.75) -> str:
-    """Lighten a hex color by mixing with white.
-
-    Parameters
-    ----------
-    hex_color : str
-        Hex color string (with or without '#' prefix).
-    amount : float
-        0.0 = unchanged, 1.0 = white.
-    """
-    h = hex_color.lstrip("#")
-    r, g, b = int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16)
-    r = round(r + (255 - r) * amount)
-    g = round(g + (255 - g) * amount)
-    b = round(b + (255 - b) * amount)
-    return f"#{r:02x}{g:02x}{b:02x}"
-
-
-CYCLE_LIGHT = [lighten(c, 0.75) for c in CYCLE]  # area/fill backgrounds
-CYCLE_BAR = [lighten(c, 0.30) for c in CYCLE]  # bar fill colors
+from qk_colors import (
+    CYCLE,
+    CYCLE_BAR,
+    CYCLE_CB,
+    CYCLE_LIGHT,
+    QK_COLORS,
+    lighten,
+)
 
 _STYLE_FILE = Path(__file__).with_name("qk.mplstyle")
+
+# Grid alpha used by both the mplstyle and set_seaborn_theme — keep in sync.
+_GRID_ALPHA = 0.5
 
 # ── Context presets (scaling overrides) ──
 _PAPER_BASE = 11
@@ -258,14 +208,20 @@ def line_labels(ax=None, **text_kwargs) -> None:
     """Place labels at the end of each line, replacing the legend.
 
     Reads label and color from each Line2D on the axes, places an
-    annotation at the last data point, and removes the legend.
+    annotation at the last data point, and removes the legend. Font size
+    tracks the active ``legend.fontsize`` rcParam so labels scale with
+    the paper / talk / poster contexts.
     """
     from matplotlib.lines import Line2D
 
     if ax is None:
         ax = plt.gca()
 
-    defaults = {"fontsize": 9.5, "fontweight": 500, "va": "center"}
+    defaults = {
+        "fontsize": plt.rcParams["legend.fontsize"],
+        "fontweight": 500,
+        "va": "center",
+    }
     defaults.update(text_kwargs)
 
     for line in ax.get_lines():
@@ -290,12 +246,16 @@ def line_labels(ax=None, **text_kwargs) -> None:
 
 
 def heatmap_kws(**overrides) -> dict:
-    """Return default seaborn heatmap kwargs with qk styling."""
+    """Return default seaborn heatmap kwargs with qk styling.
+
+    Annotation size tracks the active ``legend.fontsize`` rcParam so
+    heatmaps scale with the paper / talk / poster contexts.
+    """
     defaults = {
         "cmap": "qk_diverging",
         "linewidths": 0.5,
         "linecolor": "white",
-        "annot_kws": {"size": 9.5},
+        "annot_kws": {"size": plt.rcParams["legend.fontsize"]},
     }
     defaults.update(overrides)
     return defaults
@@ -408,7 +368,7 @@ def set_seaborn_theme(*, colorblind: bool = False) -> None:
             "axes.spines.top": False,
             "axes.spines.right": False,
             "grid.color": QK_COLORS["border"],
-            "grid.alpha": 0.5,
+            "grid.alpha": _GRID_ALPHA,
             "grid.linewidth": 0.6,
         },
     )
@@ -427,3 +387,51 @@ def despine(ax=None, **kwargs) -> None:
         ax = ax or plt.gca()
         ax.spines["top"].set_visible(False)
         ax.spines["right"].set_visible(False)
+
+
+def sparkline(ax, x, y, *, color: str | None = None, linewidth: float | None = None,
+              mark_extrema: bool = True, **plot_kwargs):
+    """Render a Tufte-style sparkline — a compact, axis-less line trace.
+
+    Strips spines, ticks, grid, and labels; tightens the y-range to the data.
+    Optionally marks the min and max points. Returns the Line2D for further
+    styling.
+
+    Parameters
+    ----------
+    ax : matplotlib Axes
+        Target axes; its decorations are removed in place.
+    x, y : sequences
+        Data coordinates.
+    color : str, optional
+        Line color; defaults to ``QK_COLORS["text"]``.
+    linewidth : float, optional
+        Line width; defaults to ``rcParams["lines.linewidth"] * 0.7`` so
+        sparklines stay quieter than primary charts.
+    mark_extrema : bool
+        If True, places small dots at the min and max of ``y``.
+    **plot_kwargs
+        Forwarded to ``ax.plot``.
+    """
+    color = color or QK_COLORS["text"]
+    linewidth = linewidth if linewidth is not None else plt.rcParams["lines.linewidth"] * 0.7
+
+    (line,) = ax.plot(x, y, color=color, linewidth=linewidth, **plot_kwargs)
+
+    if mark_extrema and len(y):
+        y_arr = list(y)
+        i_min, i_max = y_arr.index(min(y_arr)), y_arr.index(max(y_arr))
+        ax.plot(list(x)[i_min], y_arr[i_min], "o", color=QK_COLORS["accent"],
+                markersize=3, zorder=3)
+        ax.plot(list(x)[i_max], y_arr[i_max], "o", color=QK_COLORS["danger"],
+                markersize=3, zorder=3)
+
+    for spine in ax.spines.values():
+        spine.set_visible(False)
+    ax.set_xticks([])
+    ax.set_yticks([])
+    ax.set_xlabel("")
+    ax.set_ylabel("")
+    ax.grid(False)
+    ax.margins(x=0.02, y=0.15)
+    return line

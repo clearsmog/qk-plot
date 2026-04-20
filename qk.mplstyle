@@ -1,4 +1,4 @@
-# qk — Matplotlib style harmonized with the qk Typst library (v3.0.0)
+# qk — Matplotlib style harmonized with the qk Typst library (v3.1.0)
 # Palette: Tailwind CSS 600-series; typography matches Inter headings
 # Install globally: cp qk.mplstyle ~/.matplotlib/stylelib/
 
@@ -71,7 +71,6 @@ figure.constrained_layout.hspace: 0.04
 
 # ── Legend ──
 legend.frameon: False
-legend.framealpha: 0.9
 
 # ── Savefig (print-quality for Typst PDFs) ──
 savefig.dpi: 300

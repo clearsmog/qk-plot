@@ -1,4 +1,4 @@
-// qk-plot-examples — cetz-plot and Lilaq charts using the qk style (v3.0.0)
+// qk-plot-examples — cetz-plot and Lilaq charts using the qk style (v3.1.0)
 #import "@preview/cetz:0.4.2"
 #import "@preview/cetz-plot:0.1.3": plot, chart
 #import "@preview/lilaq:0.6.0" as lq

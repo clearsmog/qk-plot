@@ -1,4 +1,4 @@
-"""Demo — qk Seaborn helpers showcase (v3.0.0).
+"""Demo — qk Seaborn helpers showcase (v3.1.0).
 
 Generates 4 SVG files demonstrating the qk seaborn helpers:
 violin + strip overlay, boxplot, barplot (CYCLE_BAR), pairplot.

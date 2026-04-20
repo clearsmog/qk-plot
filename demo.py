@@ -1,4 +1,4 @@
-"""Demo — qk Matplotlib/Seaborn style showcase (v3.0.0).
+"""Demo — qk Matplotlib/Seaborn style showcase (v3.1.0).
 
 Generates a 4x2 panel figure demonstrating the qk palette, typography,
 colormaps, line_labels, colorblind palette, and context presets.
@@ -133,7 +133,7 @@ ax.set_title("Colorblind-Safe Palette (Okabe-Ito)")
 ax.set_ylabel("Value")
 ax.set_xticks(range(len(cb_labels)), cb_labels, rotation=35, ha="right")
 
-fig.suptitle("qk Style — Matplotlib Demo (v3.0.0)", color=QK_COLORS["heading"])
+fig.suptitle("qk Style — Matplotlib Demo (v3.1.0)", color=QK_COLORS["heading"])
 
 fig.savefig("demo.svg")
 fig.savefig("demo.png")
