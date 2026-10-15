@@ -78,6 +78,18 @@
   (stroke: c + 0.75pt, fill: qk-cycle-bar.at(calc.rem(i, qk-cycle.len())))
 }
 
+// Mark shapes per series, so series stay distinct in grayscale.
+// Usage: plot.add(data, mark: qk-marks.at(i)) with mark-style: qk-plot-style
+#let qk-marks = ("o", "square", "triangle", "diamond", "x", "+", "*", "-")
+
+// Tick labels as plain text (cetz-plot's default renders them as math, which
+// ignores the document font). Usage: plot.plot(x-format: qk-tick-format, ...)
+#let qk-tick-format(v) = str(calc.round(v, digits: 2))
+
+// Canvas text size (cetz 0.5 content.wrap). Usage inside cetz.canvas:
+//   set-style(content: qk-cetz-content)
+#let qk-cetz-content = (wrap: c => text(size: qk-font-sizes.tick, c))
+
 // ── Lilaq theme ──
 // Usage: #show: qk-lilaq-theme()
 // Colorblind variant: #show: qk-lilaq-theme(colorblind: true)

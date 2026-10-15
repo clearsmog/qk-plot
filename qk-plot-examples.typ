@@ -1,6 +1,6 @@
 // qk-plot-examples — cetz-plot and Lilaq charts using the qk style (v3.1.0)
-#import "@preview/cetz:0.4.2"
-#import "@preview/cetz-plot:0.1.3": plot, chart
+#import "@preview/cetz:0.5.2"
+#import "@preview/cetz-plot:0.1.4": plot, chart
 #import "@preview/lilaq:0.6.0" as lq
 
 #import "qk-plot.typ": *
@@ -15,6 +15,7 @@
 #figure(
   cetz.canvas({
     import cetz.draw: *
+    set-style(content: qk-cetz-content)
 
     plot.plot(
       size: (10, 6),
@@ -23,20 +24,27 @@
       x-tick-step: 1,
       y-tick-step: 10,
       y-min: 0,
+      y-max: 80,
       y-grid: true,
-      legend: "inner-north-east",
+      x-format: qk-tick-format,
+      y-format: qk-tick-format,
+      legend: "inner-north-west",
       plot-style: qk-plot-style,
+      mark-style: qk-plot-style,
       {
         plot.add(
           ((1, 45), (2, 52), (3, 48), (4, 61), (5, 58), (6, 72)),
+          mark: qk-marks.at(0),
           label: [Product A],
         )
         plot.add(
           ((1, 30), (2, 35), (3, 42), (4, 38), (5, 45), (6, 51)),
+          mark: qk-marks.at(1),
           label: [Product B],
         )
         plot.add(
           ((1, 22), (2, 28), (3, 31), (4, 35), (5, 40), (6, 47)),
+          mark: qk-marks.at(2),
           label: [Product C],
         )
       },

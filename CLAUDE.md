@@ -54,7 +54,7 @@ For per-bar colors: `sns.barplot(df, hue="col", legend=False, **barplot_kws(pale
 ## Typst Integration
 
 - **Lilaq** (preferred): `#show: qk-lilaq-theme()` applies full qk styling
-- **cetz-plot**: use `qk-plot-style` and `qk-bar-style` helpers
+- **cetz-plot**: use `qk-plot-style` and `qk-bar-style` helpers; `qk-cetz-content` (canvas text size), `qk-tick-format` (plain-text ticks), `qk-marks` (per-series mark shapes)
 - SVGs from matplotlib/plotnine embed via `#image("chart.svg", width: 100%)`
 - Typography constants: `qk-font-family`, `qk-font-sizes` dict
 - Stroke constants: `qk-grid-stroke`, `qk-spine-stroke`, `qk-line-width`
