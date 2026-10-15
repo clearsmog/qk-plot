@@ -94,17 +94,12 @@ def _ensure_inter() -> None:
         Path.home() / ".local" / "share" / "fonts",
     ]
 
-    registered = False
     for d in search_dirs:
         if not d.is_dir():
             continue
         for pattern in ("Inter*.ttf", "Inter*.otf"):
             for font_path in d.glob(pattern):
                 fm.fontManager.addfont(str(font_path))
-                registered = True
-
-    if registered:
-        fm._load_fontmanager(try_read_cache=False)
 
 
 # ── Composable context overlays ──
@@ -186,11 +181,13 @@ def qk_cmap(name: str = "qk_diverging"):
         cmap = LinearSegmentedColormap.from_list(
             "qk_diverging",
             [QK_COLORS["accent"], "#ffffff", QK_COLORS["danger"]],
+            bad=QK_COLORS["border"],
         )
     elif name == "qk_sequential":
         cmap = LinearSegmentedColormap.from_list(
             "qk_sequential",
             ["#ffffff", "#93c5fd", QK_COLORS["accent"], "#1e3a8a"],
+            bad=QK_COLORS["border"],
         )
     elif name == "qk_qualitative":
         cmap = ListedColormap(CYCLE, name="qk_qualitative")
@@ -200,7 +197,8 @@ def qk_cmap(name: str = "qk_diverging"):
             "Choose from: qk_diverging, qk_sequential, qk_qualitative"
         )
 
-    mpl.colormaps.register(cmap, force=True)
+    if name not in mpl.colormaps:
+        mpl.colormaps.register(cmap)
     return cmap
 
 
@@ -389,8 +387,16 @@ def despine(ax=None, **kwargs) -> None:
         ax.spines["right"].set_visible(False)
 
 
-def sparkline(ax, x, y, *, color: str | None = None, linewidth: float | None = None,
-              mark_extrema: bool = True, **plot_kwargs):
+def sparkline(
+    ax,
+    x,
+    y,
+    *,
+    color: str | None = None,
+    linewidth: float | None = None,
+    mark_extrema: bool = True,
+    **plot_kwargs,
+):
     """Render a Tufte-style sparkline — a compact, axis-less line trace.
 
     Strips spines, ticks, grid, and labels; tightens the y-range to the data.
@@ -414,17 +420,31 @@ def sparkline(ax, x, y, *, color: str | None = None, linewidth: float | None = N
         Forwarded to ``ax.plot``.
     """
     color = color or QK_COLORS["text"]
-    linewidth = linewidth if linewidth is not None else plt.rcParams["lines.linewidth"] * 0.7
+    linewidth = (
+        linewidth if linewidth is not None else plt.rcParams["lines.linewidth"] * 0.7
+    )
 
     (line,) = ax.plot(x, y, color=color, linewidth=linewidth, **plot_kwargs)
 
     if mark_extrema and len(y):
         y_arr = list(y)
         i_min, i_max = y_arr.index(min(y_arr)), y_arr.index(max(y_arr))
-        ax.plot(list(x)[i_min], y_arr[i_min], "o", color=QK_COLORS["accent"],
-                markersize=3, zorder=3)
-        ax.plot(list(x)[i_max], y_arr[i_max], "o", color=QK_COLORS["danger"],
-                markersize=3, zorder=3)
+        ax.plot(
+            list(x)[i_min],
+            y_arr[i_min],
+            "o",
+            color=QK_COLORS["accent"],
+            markersize=3,
+            zorder=3,
+        )
+        ax.plot(
+            list(x)[i_max],
+            y_arr[i_max],
+            "o",
+            color=QK_COLORS["danger"],
+            markersize=3,
+            zorder=3,
+        )
 
     for spine in ax.spines.values():
         spine.set_visible(False)
