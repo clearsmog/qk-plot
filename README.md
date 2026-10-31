@@ -56,14 +56,36 @@ from plotnine import ggplot, aes, geom_point
 
 ### cetz-plot (Typst native)
 ```typst
-#import "@preview/cetz:0.4.2"
-#import "@preview/cetz-plot:0.1.3": plot, chart
+#import "@preview/cetz:0.5.3"
+#import "@preview/cetz-plot:0.1.4": plot, chart
 #import "qk-plot.typ": *
 
-// Style helpers for series and bars
-plot.plot(plot-style: qk-plot-style, ...)
+#cetz.canvas({
+  import cetz.draw: *
+  set-style(content: qk-cetz-content)   // canvas text at qk tick size
+
+  plot.plot(
+    size: (8, 5),
+    x-format: qk-tick-format,           // plain-text ticks (no math font)
+    y-format: qk-tick-format,
+    plot-style: qk-plot-style,
+    mark-style: qk-plot-style,
+    {
+      plot.add(data-a, mark: qk-marks.at(0))
+      plot.add(data-b, mark: qk-marks.at(1))
+    },
+  )
+})
+
 chart.columnchart(bar-style: qk-bar-style, ...)
 ```
+
+| Helper | Purpose |
+|--------|---------|
+| `qk-plot-style(i)` / `qk-bar-style(i)` | Series stroke / bar fill from `qk-cycle` |
+| `qk-cetz-content` | `set-style(content: ...)` value; sizes canvas text to `qk-font-sizes.tick` |
+| `qk-tick-format` | `x-format` / `y-format` that renders ticks as plain text, rounded to 2 dp |
+| `qk-marks` | 8 mark shapes, index-aligned with `qk-cycle` |
 
 ### Lilaq (Typst native, preferred)
 ```typst
